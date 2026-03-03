@@ -61,7 +61,6 @@ workflow NFCORE_RNASEQ {
     // SUBWORKFLOW: Prepare reference genome files
     //
     PREPARE_GENOME (
-        params.fasta,
         params.gtf,
         params.gff,
         params.additional_fasta,
@@ -104,7 +103,7 @@ workflow NFCORE_RNASEQ {
     //
     // WORKFLOW: Run nf-core/rnaseq workflow
     //
-    ch_samplesheet = channel.value(file(params.input, checkIfExists: true))
+    ch_samplesheet = channel.value(file(params.input))
 
     // Bowtie2 rRNA index is built on-demand inside the fastq_remove_rrna subworkflow
     // rather than in PREPARE_GENOME, to avoid duplicating the rRNA FASTA preparation logic
@@ -134,7 +133,7 @@ workflow NFCORE_RNASEQ {
     ch_versions = ch_versions.mix(RNASEQ.out.versions)
 
     emit:
-    trim_status    = RNASEQ.out.trim_status    // channel: [id, boolean]
+    trim_status    = RNASEQ.out.map_status     // channel: [id, boolean]
     map_status     = RNASEQ.out.map_status     // channel: [id, boolean]
     strand_status  = RNASEQ.out.strand_status  // channel: [id, boolean]
     multiqc_report = RNASEQ.out.multiqc_report // channel: /path/to/multiqc_report.html
